@@ -1,0 +1,15 @@
+{
+  "client_id" : "95c09424-604f-42a2-9c8d-b1af0cd57b3c",
+  "authorization_user_agent" : "DEFAULT",
+  "redirect_uri" : "msauth://com.cigar_key/MdwNqEZlmTewjQLywxlBjx7Shtg%3D",
+  "account_mode": "SINGLE",
+  "authorities" : [
+    {
+      "type": "B2C",
+      "audience": {
+        "type": "AzureADMyOrg",
+        "tenant_id": "organizations"
+      }
+    }
+  ]
+}

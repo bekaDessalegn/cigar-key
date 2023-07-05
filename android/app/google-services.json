@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "644464291300",
+    "project_id": "cigar-key",
+    "storage_bucket": "cigar-key.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644464291300:android:6a2d9a4d0761c9aec56bf1",
+        "android_client_info": {
+          "package_name": "com.cigar_key"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "644464291300-i2kj9vnl4fddih0uj26nas3akl9of954.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSqzsv3cV9CTJ44hsFRhPx1M3QGKAfZCE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "644464291300-i2kj9vnl4fddih0uj26nas3akl9of954.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
