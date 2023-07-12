@@ -1,6 +1,7 @@
 //import 'package:aad_oauth/model/config.dart';
 import 'package:cigarKey/presentation/custom__icons_icons.dart';
 import 'package:cigarKey/providers/provider.dart';
+import 'package:cigarKey/screens/Login/b2c_screen.dart';
 import 'package:cigarKey/service/ApiService.dart';
 import 'package:cigarKey/utils/fontSize.dart';
 import 'package:cigarKey/widgets/ErrorPopup.dart';
@@ -31,6 +32,15 @@ final String login = '';
 final String pass = '';
 
 class _LoginBodyState extends State<LoginBody> {
+
+  FlutterAppAuth appAuth = FlutterAppAuth();
+
+  final _cliendId = '845d5616-d846-4c09-995e-9ba51f9df45d';
+  final _redirectUrl = "http://localhost/";
+  // final _redirectUrl = "msauth://com.cigar_key/2jmj7l5rSw0yVb%2FvlWAYkK%2FYBwk%3D";
+  final _discoveryUrl = "https://thecigarkeyb2c.b2clogin.com/Thecigarkeyb2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1_signupsignin1";
+  final List<String> _scopes = ['openid'];
+
   FlutterAppAuth _appAuth = FlutterAppAuth();
   // locate.Location location = locate.Location();
   final RoundedLoadingButtonController _btnController =
@@ -41,6 +51,17 @@ class _LoginBodyState extends State<LoginBody> {
   void initState() {
     super.initState();
     serviceStat();
+  }
+
+  Future b2cImp() async {
+    final authorizeTokenRequest = AuthorizationTokenRequest(
+        _cliendId, _redirectUrl,
+        discoveryUrl: _discoveryUrl, scopes: _scopes);
+    final result =
+    await appAuth.authorizeAndExchangeCode(authorizeTokenRequest);
+
+    print("WWWWWWWWWWWWEEWEWEWEWEWEWWEREERRERWEREWRWER");
+    print(result);
   }
 
   Future serviceStat() async {
@@ -211,7 +232,22 @@ class _LoginBodyState extends State<LoginBody> {
                       ),
                       onPressed: () async {
                         //loadData();
-                        var accessToken = b2cClient.authB2c(0);
+                        // await b2cImp();
+                        // var accessToken = b2cClient.authB2c(0);
+                        final result = await Navigator.of(context).push(MaterialPageRoute(builder: (_) => B2CScreen()));
+                        if (result != null && result is String) {
+                          // Use the authorization code or access token as needed
+                          final code = Uri.parse(result).queryParameters['code'];
+                          final accessToken = Uri.parse(result).queryParameters['access_token'];
+                          final idToken = Uri.parse(result).queryParameters['id_token'];
+
+                          // Perform additional actions after successful login
+                          print("This is the result LLLLLLLLLLLLLLLLLLLLLLLL");
+                          print(code);
+                          print(accessToken);
+                          print(idToken);
+                          print(result);
+                        }
                         // try {
                         //   var bodyArgs = {
                         //     "Email": "mauricio.rios@revstarconsulting.com"
