@@ -50,8 +50,9 @@ android {
         multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        manifestPlaceholders = [appAuthRedirectScheme: "msauth://com.cigar_key/816pWKehkDz%2Fpe8Up%2F%2F8Bm8tsAY%3D",
-                            applicationName: "com.cigar_key"]
+        manifestPlaceholders += [
+                'appAuthRedirectScheme' : 'com.cigar_key'
+        ]
     }
 
     buildTypes {
