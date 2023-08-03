@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 // import 'package:location/location.dart' as locate;
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:provider/provider.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:flutter/services.dart';
@@ -43,7 +44,7 @@ class _LoginBodyState extends State<LoginBody> {
 
   FlutterAppAuth _appAuth = FlutterAppAuth();
   // locate.Location location = locate.Location();
-  final RoundedLoadingButtonController _btnController =
+  final RoundedLoadingButtonController btnController =
       RoundedLoadingButtonController();
   String? token;
 
@@ -72,7 +73,7 @@ class _LoginBodyState extends State<LoginBody> {
   }
 
   Widget build(BuildContext context) {
-    var b2cClient = B2CAuth(context, _btnController);
+    // var b2cClient = B2CAuth(context, _btnController);
     var provider = Provider.of<MyProvider>(context);
     final widthSize = MediaQuery.of(context).size.width;
     final heightSize = MediaQuery.of(context).size.height;
@@ -220,7 +221,7 @@ class _LoginBodyState extends State<LoginBody> {
                       borderRadius: 12,
                       color: colorWine,
                       successColor: colorWine,
-                      controller: _btnController,
+                      controller: btnController,
                       child: Text(
                         'Unlock',
                         textScaleFactor: Fonts().textTitle(context),
@@ -234,19 +235,50 @@ class _LoginBodyState extends State<LoginBody> {
                         //loadData();
                         // await b2cImp();
                         // var accessToken = b2cClient.authB2c(0);
-                        final result = await Navigator.of(context).push(MaterialPageRoute(builder: (_) => B2CScreen()));
+                        final result = await Navigator.of(context).push(MaterialPageRoute(builder: (_) => B2CScreen(btnController: btnController,)));
                         if (result != null && result is String) {
-                          // Use the authorization code or access token as needed
-                          final code = Uri.parse(result).queryParameters['code'];
-                          final accessToken = Uri.parse(result).queryParameters['access_token'];
-                          final idToken = Uri.parse(result).queryParameters['id_token'];
-
-                          // Perform additional actions after successful login
-                          print("This is the result LLLLLLLLLLLLLLLLLLLLLLLL");
-                          print(code);
-                          print(accessToken);
-                          print(idToken);
                           print(result);
+                          final idToken = extractIdTokenFromUrl(result);
+                          Map<String, dynamic> decodedToken = JwtDecoder.decode(idToken);
+                          print(idToken);
+                          print(decodedToken);
+                          print(decodedToken["emails"][0] ?? "");
+                          try {
+                            var bodyArgs = {
+                              "Email": decodedToken["emails"][0] ?? ""
+                            };
+                            await ApiService.getProfile(bodyArgs)
+                                .then((value) {
+
+                              print("WWWWWWWWWWWWWWWEEEEEEEEEEEEETTTTTTTTPPPPPPPPPPOOOOOOOOOOOOQQQQQQQQQ");
+                              print(value);
+
+                                  return {
+
+                              if (value[0] == '200')
+                                {
+                                  setState(() {
+                                    btnController.success();
+                                    provider.test = "pinea";
+                                    Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      '/TabBar',
+                                          (Route<dynamic> route) => false,
+                                    );
+                                  }),
+                                }
+                              else
+                                {
+                                  btnController.reset(),
+                                  ErrorPopUp.errorPopUp(
+                                      context, "${value[1]}")
+                                }
+                            };
+                                });
+                          } catch (e) {
+                            print(e);
+                            //ERROR POPUP
+                          }
                         }
                         // try {
                         //   var bodyArgs = {
@@ -446,6 +478,18 @@ class _LoginBodyState extends State<LoginBody> {
       ],
     );
   }
+
+  String extractIdTokenFromUrl(String url) {
+    final startIndex = url.indexOf('id_token=');
+    if (startIndex != -1) {
+      final endIndex = url.indexOf('&', startIndex);
+      return endIndex != -1
+          ? url.substring(startIndex + 9, endIndex)
+          : url.substring(startIndex + 9);
+    }
+    return "";
+  }
+
 }
 
 // final Config config = new Config(

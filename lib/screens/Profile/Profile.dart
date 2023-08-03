@@ -36,7 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<MyProvider>(context);
-    var b2cClient = B2CAuth(context, _btnController);
+    // var b2cClient = B2CAuth(context, _btnController);
     final widthSize = MediaQuery.of(context).size.width;
     final heightSize = MediaQuery.of(context).size.height;
     Color colorText = Color.fromRGBO(197, 169, 1, 1);
@@ -507,28 +507,28 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     (Route<dynamic> route) =>
                                                         false,
                                                   );
-                                                  b2cClient
-                                                      .logout()
-                                                      .then((value) => {
-                                                            if (value == "200")
-                                                              {
-                                                                Navigator
-                                                                    .pushNamedAndRemoveUntil(
-                                                                  context,
-                                                                  '/LoginPage',
-                                                                  (Route<dynamic>
-                                                                          route) =>
-                                                                      false,
-                                                                )
-                                                              }
-                                                            else
-                                                              {
-                                                                ErrorPopUp
-                                                                    .errorPopUp(
-                                                                        context,
-                                                                        "Occurred an error try again")
-                                                              }
-                                                          });
+                                                  // b2cClient
+                                                  //     .logout()
+                                                  //     .then((value) => {
+                                                  //           if (value == "200")
+                                                  //             {
+                                                  //               Navigator
+                                                  //                   .pushNamedAndRemoveUntil(
+                                                  //                 context,
+                                                  //                 '/LoginPage',
+                                                  //                 (Route<dynamic>
+                                                  //                         route) =>
+                                                  //                     false,
+                                                  //               )
+                                                  //             }
+                                                  //           else
+                                                  //             {
+                                                  //               ErrorPopUp
+                                                  //                   .errorPopUp(
+                                                  //                       context,
+                                                  //                       "Occurred an error try again")
+                                                  //             }
+                                                  //         });
                                                 },
                                                 child: Text(
                                                   "Yes",

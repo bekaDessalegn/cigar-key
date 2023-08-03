@@ -250,6 +250,8 @@ class ApiService {
         }
         return ['200', profile];
       } else {
+        print(response);
+        print(response.body);
         return ['400', "Occurred an error Please try again"];
       }
     } catch (e) {

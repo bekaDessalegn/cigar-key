@@ -2,8 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 class B2CScreen extends StatefulWidget {
+
+  final RoundedLoadingButtonController btnController;
+  B2CScreen({required this.btnController});
+
 
   @override
   State<B2CScreen> createState() => _B2CScreenState();
@@ -42,6 +47,33 @@ class _B2CScreenState extends State<B2CScreen> {
     print("This is the platform");
     print(kRedirectUri);
 
+    return Platform.isIOS ?
+    GestureDetector(
+        onPanUpdate: (details) {
+          if (details.delta.dx > 0) {
+            if(true){
+              widget.btnController.reset();
+              Navigator.of(context).pop();
+            }
+          }
+        },
+        child: WillPopScope(
+          onWillPop: () async {
+            return false;
+          },
+          child: buildInitialInput(),
+        )
+    )
+        : WillPopScope(
+      onWillPop: () async {
+        widget.btnController.reset();
+        return true;
+      },
+      child: buildInitialInput(),
+    );
+  }
+
+  Widget buildInitialInput() {
     return Scaffold(
       body: InAppWebView(
         initialUrlRequest: URLRequest(url: Uri.parse('$kAuthority')),
@@ -60,7 +92,7 @@ class _B2CScreenState extends State<B2CScreen> {
 
           final url = navigationAction.request.url;
 
-          print(url);
+          // print(url);
 
           if (url.toString().startsWith(kRedirectUri)) {
             await _webViewController?.stopLoading();
@@ -73,13 +105,14 @@ class _B2CScreenState extends State<B2CScreen> {
         onLoadStop: (controller, url) async {
 
           print("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
-          print(url);
-          if (url.toString().startsWith(kRedirectUri)) {
-            await _webViewController?.stopLoading();
-            Navigator.of(context).pop(url.toString());
-          }
+          // print(url);
+          // if (url.toString().startsWith(kRedirectUri)) {
+          //   await _webViewController?.stopLoading();
+          //   Navigator.of(context).pop(url.toString());
+          // }
         },
       ),
     );
   }
+
 }
