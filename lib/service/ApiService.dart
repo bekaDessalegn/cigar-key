@@ -40,36 +40,6 @@ class ApiService {
             'The connection has timed out, Please try again!');
       });
       if (response.statusCode == 200) {
-        var jsonList = json.decode(utf8.decode(response.bodyBytes).toString());
-        Profile profile = Profile.fromJson(jsonList['profile']);
-        user.setName(profile.FirstName);
-        user.setEmail(profile.Email);
-        user.setImage(profile.ProfileImagePath);
-        user.setZip(profile.ZipCode);
-        user.setLastName(profile.LastName);
-        user.setPhone(profile.PhoneNumber);
-        user.setGender(profile.gender);
-        user.setTutorialTaken(profile.TutorialTaken);
-        user.setNotification(profile.notification);
-        user.setTravelActive(profile.travelActive);
-        user.setTravelDistance(profile.travelDistance);
-        if (jsonList['profile']['Rank'] <= 1.4) {
-          user.setRank("Strong");
-        } else if (jsonList['profile']['Rank'] >= 1.5 &&
-            jsonList['profile']['Rank'] <= 2.4) {
-          user.setRank("Full");
-        } else if (jsonList['profile']['Rank'] >= 2.5 &&
-            jsonList['profile']['Rank'] <= 3.4) {
-          user.setRank("Medium");
-        } else if (jsonList['profile']['Rank'] >= 3.5 &&
-            jsonList['profile']['Rank'] <= 4.4) {
-          user.setRank("Mild");
-        } else if (jsonList['profile']['Rank'] >= 4.6 &&
-            jsonList['profile']['Rank'] <= 5) {
-          user.setRank("Sweet");
-        }
-        // user.setFirstLogin(true);
-
         return ["200", response.body];
       } else if (response.statusCode == 400) {
         return ["400", "Profile already exsists."];
@@ -252,6 +222,37 @@ class ApiService {
       } else {
         print(response);
         print(response.body);
+        final data = json.decode(response.body);
+        if(data["Error"]["Message"] == "Profile doesn't exsists."){
+          return ['404', "Profile doesn't exsists."];
+        }
+        return ['400', "Occurred an error Please try again"];
+      }
+    } catch (e) {
+      return ['500', "Occurred an error Please try again"];
+    }
+  }
+
+  static Future<List> isPrefrencesNull(args) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              "https://func-thecigarkey-dev.azurewebsites.net/api/GetProfile"),
+          body: json.encode(args));
+
+      if (response.statusCode == 200) {
+        var jsonList = json.decode(utf8.decode(response.bodyBytes).toString());
+
+        List? preferences = jsonList['preferences'];
+
+        return ['200', preferences == null ? true : false];
+      } else {
+        print(response);
+        print(response.body);
+        final data = json.decode(response.body);
+        if(data["Error"]["Message"] == "Profile doesn't exsists."){
+          return ['404', "Profile doesn't exsists."];
+        }
         return ['400', "Occurred an error Please try again"];
       }
     } catch (e) {
