@@ -1,4 +1,5 @@
 //import 'package:aad_oauth/model/config.dart';
+import 'package:cigarKey/model/UserProfileModel.dart';
 import 'package:cigarKey/presentation/custom__icons_icons.dart';
 import 'package:cigarKey/providers/provider.dart';
 import 'package:cigarKey/screens/Login/b2c_screen.dart';
@@ -34,14 +35,6 @@ final String pass = '';
 
 class _LoginBodyState extends State<LoginBody> {
 
-  FlutterAppAuth appAuth = FlutterAppAuth();
-
-  final _cliendId = '845d5616-d846-4c09-995e-9ba51f9df45d';
-  final _redirectUrl = "http://localhost/";
-  // final _redirectUrl = "msauth://com.cigar_key/2jmj7l5rSw0yVb%2FvlWAYkK%2FYBwk%3D";
-  final _discoveryUrl = "https://thecigarkeyb2c.b2clogin.com/Thecigarkeyb2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1_signupsignin1";
-  final List<String> _scopes = ['openid'];
-
   FlutterAppAuth _appAuth = FlutterAppAuth();
   // locate.Location location = locate.Location();
   final RoundedLoadingButtonController btnController =
@@ -52,17 +45,6 @@ class _LoginBodyState extends State<LoginBody> {
   void initState() {
     super.initState();
     serviceStat();
-  }
-
-  Future b2cImp() async {
-    final authorizeTokenRequest = AuthorizationTokenRequest(
-        _cliendId, _redirectUrl,
-        discoveryUrl: _discoveryUrl, scopes: _scopes);
-    final result =
-    await appAuth.authorizeAndExchangeCode(authorizeTokenRequest);
-
-    print("WWWWWWWWWWWWEEWEWEWEWEWEWWEREERRERWEREWRWER");
-    print(result);
   }
 
   Future serviceStat() async {
@@ -243,35 +225,115 @@ class _LoginBodyState extends State<LoginBody> {
                           print(idToken);
                           print(decodedToken);
                           print(decodedToken["emails"][0] ?? "");
+                          UserProfileModel profile = UserProfileModel.fromJson(decodedToken);
+                          print(profile.PhoneNumber);
                           try {
                             var bodyArgs = {
                               "Email": decodedToken["emails"][0] ?? ""
                             };
                             await ApiService.getProfile(bodyArgs)
-                                .then((value) {
-
-                              print("WWWWWWWWWWWWWWWEEEEEEEEEEEEETTTTTTTTPPPPPPPPPPOOOOOOOOOOOOQQQQQQQQQ");
-                              print(value);
+                                .then((value) async {
 
                                   return {
 
                               if (value[0] == '200')
                                 {
-                                  setState(() {
-                                    btnController.success();
-                                    provider.test = "pinea";
-                                    Navigator.pushNamedAndRemoveUntil(
-                                      context,
-                                      '/TabBar',
-                                          (Route<dynamic> route) => false,
-                                    );
-                                  }),
+                                  await ApiService.isPrefrencesNull(bodyArgs)
+                                      .then((value) async {
+
+                                    return {
+
+                                      if (value[0] == '200')
+                                        {
+                                          if(value[1]){
+                                            setState(() {
+                                              btnController.success();
+                                              provider.test = "pinea";
+                                              Navigator.pushNamedAndRemoveUntil(
+                                                context,
+                                                '/StartTest',
+                                                    (Route<dynamic> route) => false,
+                                              );
+                                            }),
+                                          } else {
+                                            setState(() {
+                                              btnController.success();
+                                              provider.test = "pinea";
+                                              Navigator.pushNamedAndRemoveUntil(
+                                                context,
+                                                '/TabBar',
+                                                    (Route<dynamic> route) => false,
+                                              );
+                                            }),
+                                          }
+                                        }
+                                      else
+                                        {
+                                          btnController.reset(),
+                                          ErrorPopUp.errorPopUp(
+                                              context, "${value[1]}")
+                                        }
+                                    };
+                                  })
                                 }
                               else
                                 {
-                                  btnController.reset(),
-                                  ErrorPopUp.errorPopUp(
-                                      context, "${value[1]}")
+                                  if(value[0] == "404"){
+                                    await ApiService.createProfile(profile.toJson())
+                                        .then((value) async {
+
+                                      return {
+
+                                        if (value[0] == '200')
+                                          {
+                                            // setState(() {
+                                            //   btnController.success();
+                                            //   provider.test = "pinea";
+                                            //   Navigator.pushNamedAndRemoveUntil(
+                                            //     context,
+                                            //     '/TabBar',
+                                            //         (Route<dynamic> route) => false,
+                                            //   );
+                                            // }),
+                                            await ApiService.getProfile(bodyArgs)
+                                                .then((value) async {
+
+                                              return {
+
+                                                if (value[0] == '200')
+                                                  {
+                                                    setState(() {
+                                                      btnController.success();
+                                                      provider.test = "pinea";
+                                                      Navigator.pushNamedAndRemoveUntil(
+                                                        context,
+                                                        '/StartTest',
+                                                            (Route<dynamic> route) => false,
+                                                      );
+                                                    }),
+                                                  }
+                                                else
+                                                  {
+                                                      btnController.reset(),
+                                                      ErrorPopUp.errorPopUp(
+                                                          context, "${value[1]}")
+                                                  }
+                                              };
+                                            })
+                                          }
+                                        else
+                                          {
+                                            btnController.reset(),
+                                            ErrorPopUp.errorPopUp(
+                                                context, "${value[1]}")
+                                          }
+                                      };
+                                    })
+                                  } else {
+                                    btnController.reset(),
+                                    ErrorPopUp.errorPopUp(
+                                        context, "${value[1]}")
+                                  }
                                 }
                             };
                                 });
