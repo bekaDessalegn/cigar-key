@@ -5,6 +5,7 @@ import 'package:cigarKey/providers/provider.dart';
 import 'package:cigarKey/screens/Login/b2c_screen.dart';
 import 'package:cigarKey/service/ApiService.dart';
 import 'package:cigarKey/utils/fontSize.dart';
+import 'package:cigarKey/utils/userPreferences.dart';
 import 'package:cigarKey/widgets/ErrorPopup.dart';
 import 'package:flutter/material.dart';
 // import 'package:location/location.dart' as locate;
@@ -40,6 +41,8 @@ class _LoginBodyState extends State<LoginBody> {
   final RoundedLoadingButtonController btnController =
       RoundedLoadingButtonController();
   String? token;
+
+  final userPreferences = UserPreferences();
 
   @override
   void initState() {
@@ -227,6 +230,7 @@ class _LoginBodyState extends State<LoginBody> {
                           print(decodedToken["emails"][0] ?? "");
                           UserProfileModel profile = UserProfileModel.fromJson(decodedToken);
                           print(profile.PhoneNumber);
+                          userPreferences.setEmail(decodedToken["emails"][0]);
                           try {
                             var bodyArgs = {
                               "Email": decodedToken["emails"][0] ?? ""
@@ -259,6 +263,7 @@ class _LoginBodyState extends State<LoginBody> {
                                             setState(() {
                                               btnController.success();
                                               provider.test = "pinea";
+                                              userPreferences.login("loggedin");
                                               Navigator.pushNamedAndRemoveUntil(
                                                 context,
                                                 '/TabBar',

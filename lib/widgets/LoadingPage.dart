@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:cigarKey/screens/Login/LoginPage.dart';
+import 'package:cigarKey/service/ApiService.dart';
 import 'package:cigarKey/utils/fontSize.dart';
+import 'package:cigarKey/utils/userPreferences.dart';
+import 'package:cigarKey/widgets/ErrorPopup.dart';
 import 'package:flutter/material.dart';
 
 class LoadingPage extends StatelessWidget {
@@ -18,11 +21,14 @@ class LoadingBody extends StatefulWidget {
 }
 
 class _LoadingBodyState extends State<LoadingBody> {
+
+  final userPreferences = UserPreferences();
+
   Timer? timer;
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      checklSesion();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await checklSesion();
     });
     super.initState();
   }
@@ -34,17 +40,50 @@ class _LoadingBodyState extends State<LoadingBody> {
   }
 
   checklSesion() async {
-    timer = Timer.periodic(Duration(seconds: 4), (timer) {
-      goLogin();
+    timer = Timer.periodic(Duration(seconds: 2), (timer) async {
+      await goLogin();
     });
   }
 
-  goLogin() {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
-      (Route<dynamic> route) => false,
-    );
+  Future goLogin() async {
+    await userPreferences.readLogin().then((value) async {
+      if(value == null) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+              (Route<dynamic> route) => false,
+        );
+      } else {
+        final email = await userPreferences.getEmail();
+        await ApiService.getProfile({"Email":email})
+            .then((value) async {
+
+          return {
+
+            if (value[0] == '200')
+              {
+                setState(() {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/TabBar',
+                        (Route<dynamic> route) => false,
+                  );
+                }),
+              }
+            else
+              {
+                await userPreferences.clearEmail(),
+                await userPreferences.signout(),
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                      (Route<dynamic> route) => false,
+                )
+              }
+          };
+        });
+      }
+    });
   }
 
   @override

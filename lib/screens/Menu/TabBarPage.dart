@@ -6,6 +6,7 @@ import 'package:cigarKey/screens/Menu/Tabs/MenuPage.dart';
 import 'package:cigarKey/screens/Profile/Profile.dart';
 import 'package:cigarKey/screens/Menu/Tabs/ScanQRPage.dart';
 import 'package:cigarKey/utils/notification_api.dart';
+import 'package:cigarKey/utils/userPreferences.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -150,9 +151,12 @@ class _TabBarPageState extends State<TabBarPage>
 
   TabController? _tabController;
 
+  final userPreferences = UserPreferences();
+
   @override
   void initState() {
     super.initState();
+    userPreferences.login("loggedin");
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _geofenceService
           .addGeofenceStatusChangeListener(_onGeofenceStatusChanged);

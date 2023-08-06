@@ -3,6 +3,7 @@ import 'package:cigarKey/presentation/custom__icons_icons.dart';
 import 'package:cigarKey/service/ApiService.dart';
 import 'package:cigarKey/utils/b2cClient.dart';
 import 'package:cigarKey/utils/fontSize.dart';
+import 'package:cigarKey/utils/userPreferences.dart';
 import 'package:cigarKey/widgets/ErrorPopup.dart';
 import 'package:cigarKey/widgets/TutorialPage.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,8 @@ class _ProfilePageState extends State<ProfilePage> {
   UserController user = Get.put(UserController());
   final RoundedLoadingButtonController _btnController =
       RoundedLoadingButtonController();
+
+  final userPreference = UserPreferences();
 
   @override
   void initState() {
@@ -500,6 +503,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                             ElevatedButton(
                                                 style: buttonStyleError,
                                                 onPressed: () async {
+                                                  await userPreference.signout();
+                                                  await userPreference.clearEmail();
                                                   Navigator
                                                       .pushNamedAndRemoveUntil(
                                                     context,
